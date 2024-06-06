@@ -1,61 +1,41 @@
 import React from "react";
-import ReactDOM from "react-dom/client"
-// const heading = React.createElement("h1", {id:"heading",className:'top'}, "Hello world");
-// console.log(heading);
-// const root = ReactDOM.createRoot(document.getElementById("root"));
-// console.log(root);
-// root.render(heading);
+import ReactDOM from "react-dom/client";
 
-// for nested elements
+// React Element is an object but when we renders it into the dom it becomes a htmlElement
 
-{
-  /*
-  
-<div id="parent">
-  <div id="child1">
-    <h1></h1>
-    <h2></h2>
+// JSX is not html in js it is a html like syntax.
+// JSX is not valid pure js
+// PARCEL with the help of BABEL transpiles this jsx code before it reaches to the js engine.
+// behind the scenes this jsx code is convertd into react.createElement which is an
+// object and renders as a html element into the dom.
+
+const heading = (
+  <h1 id="heading1" className="heading">
+    This is a vaild syntax💀
+  </h1>
+);
+console.log(heading);
+
+// React Component
+// 1. Class based components
+// 2. Functional components
+// A functional component is a normal js function that returns a piece of jxs
+
+// Component Composition
+const HeadingComponent = () => (
+  <div>
+    <Title />
+    {Math.floor((Math.random() + 1) * 100)}
+    <h1>This is a functional component</h1>
+    {Title()}
+    <NewThing />
   </div>
-  <div id="child2">
-    <h1></h1>
-    <h2></h2>
-  </div>
-</div> 
+);
+const Title = () => <h1>I'm the title component</h1>;
 
-ReactElement(object)=>HTML(browser understand this html);
-
-*/
-}
-
-// const parent = React.createElement(
-//   "div",
-//   { id: "parent" },
-//   React.createElement(
-//     "div",
-//     { id: "child" },
-//     React.createElement("h1", {}, "I'm the h1 tag")
-//   )
-// );
-
-// const parent = React.createElement("div", { id: "parent" }, [
-//   React.createElement("div", { id: "child" }, [
-//     React.createElement("h1", {}, "inside h1"),
-//   ]),
-// ]);
-
-const parent = React.createElement("div",{id:"parent"},[
-    React.createElement("div",{id:"child1"},[
-        React.createElement("h1",{id:"h1"},"im h1"),
-        React.createElement("h2",{id:"h2"},"i'm h2")
-    ]),
-    React.createElement("div",{id:"child2"},[
-        React.createElement("h1",{id:"h1"},"im h1"),
-        React.createElement("h2",{id:"h2"},"React is soo cool")
-    ])
-])
-
-//jsx 
-// console.log(parent);
+const NewThing = function newFunction() {
+  return <h2>Comming from new function</h2>;
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(parent);
+root.render(<HeadingComponent />);
