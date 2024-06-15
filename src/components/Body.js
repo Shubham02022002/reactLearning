@@ -4,6 +4,8 @@ import data from "../utils/mockData";
 
 const Body = () => {
   const [resturantList, setResturantList] = useState(data);
+  const [searchVal, setSearchVal] = useState("");
+
   return (
     <div
       style={{
@@ -27,6 +29,59 @@ const Body = () => {
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
+        <input
+          id="search-box"
+          type="text"
+          style={{
+            backgroundColor: "#4CAF50",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+            boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
+            transition: "background-color 0.3s, transform 0.3s",
+          }}
+          placeholder="Search Resturants"
+          onChange={(e)=>{
+            setSearchVal(e.target.value);
+          }}
+        />
+        <button
+          style={{
+            backgroundColor: "#4CAF50",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+            boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
+            transition: "background-color 0.3s, transform 0.3s",
+          }}
+          onClick={() => {
+            console.log("hitere 1");
+            if (searchVal === "") {
+              setResturantList(resturantList);
+              return;
+            }
+            console.log("hitere 2");
+            const filterSearch = resturantList.filter((resturant) => {
+              if (
+                resturant.info.name.toLowerCase().includes(searchVal.toLowerCase())
+              ) {
+                console.log(resturant);
+                return resturant;
+              }
+            });
+            setResturantList(filterSearch);
+          }}
+        >
+          Search
+        </button>
         <button
           onClick={() => {
             const filteredResturants = resturantList.filter(
@@ -51,7 +106,7 @@ const Body = () => {
           onMouseDown={(e) => (e.target.style.transform = "scale(0.98)")}
           onMouseUp={(e) => (e.target.style.transform = "scale(1)")}
         >
-          Top Rated Resturants 
+          Top Rated Resturants
         </button>
         <button
           onClick={() => {
@@ -74,7 +129,7 @@ const Body = () => {
           onMouseDown={(e) => (e.target.style.transform = "scale(0.98)")}
           onMouseUp={(e) => (e.target.style.transform = "scale(1)")}
         >
-          Show All Resturants   
+          Show All Resturants
         </button>
       </div>
 
