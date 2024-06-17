@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LOGO_URL } from "../utils/constants";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [button, setButton] = useState("Login");
 
-  const handelClick = () => {
-    setButton((prevState) => (prevState === "Login" ? "Logout" : "Login"));
-  };
   return (
     <div
       style={{
@@ -20,7 +18,9 @@ const Header = () => {
       }}
     >
       <div>
-        <img style={{ width: "100px" }} src={LOGO_URL} alt="restaurantLogo" />
+        <Link to="/">
+          <img style={{ width: "100px" }} src={LOGO_URL} alt="restaurantLogo" />
+        </Link>
       </div>
       <nav style={{ display: "flex" }}>
         <ul
@@ -37,32 +37,40 @@ const Header = () => {
             onMouseOver={(e) => (e.target.style.color = "#007BFF")}
             onMouseOut={(e) => (e.target.style.color = "black")}
           >
-            Home
+            <Link to="/">Home</Link>
           </li>
           <li
             style={{ cursor: "pointer", transition: "color 0.3s ease" }}
             onMouseOver={(e) => (e.target.style.color = "#007BFF")}
             onMouseOut={(e) => (e.target.style.color = "black")}
           >
-            About Us
+            <Link to="/about">About Us</Link>
           </li>
           <li
             style={{ cursor: "pointer", transition: "color 0.3s ease" }}
             onMouseOver={(e) => (e.target.style.color = "#007BFF")}
             onMouseOut={(e) => (e.target.style.color = "black")}
           >
-            Services
+            <Link to="/services">Services</Link>
           </li>
           <li
             style={{ cursor: "pointer", transition: "color 0.3s ease" }}
             onMouseOver={(e) => (e.target.style.color = "#007BFF")}
             onMouseOut={(e) => (e.target.style.color = "black")}
           >
-            Cart
+            <Link to="/cart">Cart</Link>
           </li>
 
           <li>
-            <button onClick={handelClick}>{button}</button>
+            <button
+              onClick={() => {
+                setButton((prevState) =>
+                  prevState === "Login" ? "Logout" : "Login"
+                );
+              }}
+            >
+              {button}
+            </button>
           </li>
         </ul>
       </nav>
