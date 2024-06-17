@@ -1,6 +1,12 @@
+import { useState } from "react";
 import { LOGO_URL } from "../utils/constants";
 
 const Header = () => {
+  const [button, setButton] = useState("Login");
+
+  const handelClick = () => {
+    setButton((prevState) => (prevState === "Login" ? "Logout" : "Login"));
+  };
   return (
     <div
       style={{
@@ -53,6 +59,10 @@ const Header = () => {
             onMouseOut={(e) => (e.target.style.color = "black")}
           >
             Cart
+          </li>
+
+          <li>
+            <button onClick={handelClick}>{button}</button>
           </li>
         </ul>
       </nav>

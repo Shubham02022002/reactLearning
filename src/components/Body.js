@@ -1,12 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ResturantCard from "./ResturantCard";
-import data from "../utils/mockData";
+import Shimmer from "./Shimmer";
 
 const Body = () => {
-  const [resturantList, setResturantList] = useState(data);
+  const [resturantList, setResturantList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  return (
+  const fetchData = async () => {
+    const data = await fetch(
+      "https://www.swiggy.com/dapi/restaurants/list/v5?lat=28.659465916416142&lng=77.47289534658194&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
+    );
+    const json = await data.json();
+    setResturantList(
+      json.data.cards[1].card.card.gridElements?.infoWithStyle?.restaurants
+    );
+  };
+
+  return !resturantList || resturantList.length === 0 ? (
+    <Shimmer />
+  ) : (
     <div
       style={{
         backgroundColor: "#FFF5EE",
@@ -44,8 +59,8 @@ const Body = () => {
             boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
             transition: "background-color 0.3s, transform 0.3s",
           }}
-          placeholder="Search Resturants"
-          onChange={(e)=>{
+          placeholder="Search Restaurants"
+          onChange={(e) => {
             setSearchVal(e.target.value);
           }}
         />
@@ -63,17 +78,16 @@ const Body = () => {
             transition: "background-color 0.3s, transform 0.3s",
           }}
           onClick={() => {
-            console.log("hitere 1");
             if (searchVal === "") {
               setResturantList(resturantList);
               return;
             }
-            console.log("hitere 2");
             const filterSearch = resturantList.filter((resturant) => {
               if (
-                resturant.info.name.toLowerCase().includes(searchVal.toLowerCase())
+                resturant.info.name
+                  .toLowerCase()
+                  .includes(searchVal.toLowerCase())
               ) {
-                console.log(resturant);
                 return resturant;
               }
             });
@@ -85,7 +99,7 @@ const Body = () => {
         <button
           onClick={() => {
             const filteredResturants = resturantList.filter(
-              (resturant) => resturant.info.avgRating > 4.5
+              (resturant) => resturant.info.avgRating >= 4.5
             );
             setResturantList(filteredResturants);
           }}
@@ -106,11 +120,11 @@ const Body = () => {
           onMouseDown={(e) => (e.target.style.transform = "scale(0.98)")}
           onMouseUp={(e) => (e.target.style.transform = "scale(1)")}
         >
-          Top Rated Resturants
+          Top Rated Restaurants
         </button>
         <button
           onClick={() => {
-            setResturantList(data);
+            fetchData();
           }}
           style={{
             backgroundColor: "#4CAF50",
@@ -129,7 +143,7 @@ const Body = () => {
           onMouseDown={(e) => (e.target.style.transform = "scale(0.98)")}
           onMouseUp={(e) => (e.target.style.transform = "scale(1)")}
         >
-          Show All Resturants
+          Show All Restaurants
         </button>
       </div>
 
