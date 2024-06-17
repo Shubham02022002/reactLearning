@@ -1,25 +1,67 @@
 import React, { useEffect, useState } from "react";
 import ResturantCard from "./ResturantCard";
 import Shimmer from "./Shimmer";
-
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 const Body = () => {
-  const [resturantList, setResturantList] = useState([]);
+  const [restaurantList, setRestaurantList] = useState([]);
+  const [originalRestaurantList, setOriginalRestaurantList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const data = await fetch(
-      "https://www.swiggy.com/dapi/restaurants/list/v5?lat=28.659465916416142&lng=77.47289534658194&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
-    );
-    const json = await data.json();
-    setResturantList(
-      json.data.cards[1].card.card.gridElements?.infoWithStyle?.restaurants
-    );
+    try {
+      const response = await fetch(
+        "https://www.swiggy.com/dapi/restaurants/list/v5?lat=28.659465916416142&lng=77.47289534658194&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
+      );
+      const json = await response.json();
+      const restaurants =
+        json?.data?.cards?.[1]?.card?.card?.gridElements?.infoWithStyle
+          ?.restaurants || [];
+      setOriginalRestaurantList(restaurants);
+      setRestaurantList(restaurants);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
-  return !resturantList || resturantList.length === 0 ? (
+  const handleSearch = () => {
+    if (searchVal === "") {
+      setRestaurantList(originalRestaurantList);
+    } else {
+      const filteredRestaurants = originalRestaurantList.filter(
+        (restaurant) => {
+          return restaurant.info.name
+            .toLowerCase()
+            .includes(searchVal.toLowerCase());
+        }
+      );
+      setRestaurantList(filteredRestaurants);
+      if (filteredRestaurants.length == 0) {
+        toast.error("Restaurant not found!");
+        fetchData();
+      } else {
+        toast.success("Fill your tummy😋");
+      }
+    }
+  };
+
+  const handleTopRated = () => {
+    const filteredRestaurants = originalRestaurantList.filter(
+      (restaurant) => restaurant.info.avgRating >= 4.5
+    );
+    setRestaurantList(filteredRestaurants);
+  };
+
+  const handleReset = () => {
+    setSearchVal("");
+    setRestaurantList(originalRestaurantList);
+  };
+
+  return !restaurantList || restaurantList.length === 0 ? (
     <Shimmer />
   ) : (
     <div
@@ -30,6 +72,9 @@ const Body = () => {
         borderRadius: "5px",
       }}
     >
+      <div>
+        <Toaster />
+      </div>
       <div
         style={{
           marginBottom: "20px",
@@ -47,6 +92,7 @@ const Body = () => {
         <input
           id="search-box"
           type="text"
+          value={searchVal}
           style={{
             backgroundColor: "#4CAF50",
             color: "white",
@@ -60,9 +106,7 @@ const Body = () => {
             transition: "background-color 0.3s, transform 0.3s",
           }}
           placeholder="Search Restaurants"
-          onChange={(e) => {
-            setSearchVal(e.target.value);
-          }}
+          onChange={(e) => setSearchVal(e.target.value)}
         />
         <button
           style={{
@@ -77,32 +121,12 @@ const Body = () => {
             boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
             transition: "background-color 0.3s, transform 0.3s",
           }}
-          onClick={() => {
-            if (searchVal === "") {
-              setResturantList(resturantList);
-              return;
-            }
-            const filterSearch = resturantList.filter((resturant) => {
-              if (
-                resturant.info.name
-                  .toLowerCase()
-                  .includes(searchVal.toLowerCase())
-              ) {
-                return resturant;
-              }
-            });
-            setResturantList(filterSearch);
-          }}
+          onClick={handleSearch}
         >
           Search
         </button>
         <button
-          onClick={() => {
-            const filteredResturants = resturantList.filter(
-              (resturant) => resturant.info.avgRating >= 4.5
-            );
-            setResturantList(filteredResturants);
-          }}
+          onClick={handleTopRated}
           style={{
             backgroundColor: "#4CAF50",
             color: "white",
@@ -123,9 +147,7 @@ const Body = () => {
           Top Rated Restaurants
         </button>
         <button
-          onClick={() => {
-            fetchData();
-          }}
+          onClick={handleReset}
           style={{
             backgroundColor: "#4CAF50",
             color: "white",
@@ -150,7 +172,7 @@ const Body = () => {
       <div
         style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
       >
-        {resturantList.map((restaurant) => (
+        {restaurantList.map((restaurant) => (
           <ResturantCard resData={restaurant} key={restaurant.info.id} />
         ))}
       </div>
