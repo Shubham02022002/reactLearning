@@ -39,7 +39,7 @@ const Body = () => {
             .includes(searchVal.toLowerCase());
         }
       );
-      setRestaurantList(filteredRestaurants);
+      setRestaurantList(filteredRestaurants);     
       if (filteredRestaurants.length == 0) {
         toast.error("Restaurant not found!");
         fetchData();
