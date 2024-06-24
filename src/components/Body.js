@@ -3,19 +3,46 @@ import ResturantCard from "./ResturantCard";
 import Shimmer from "./Shimmer";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
+
 const Body = () => {
   const [restaurantList, setRestaurantList] = useState([]);
   const [originalRestaurantList, setOriginalRestaurantList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    getLocation();
+  }, []); 
+
+  useEffect(() => {
+    if (latitude && longitude) {
+      fetchData();
+    }
+  }, [latitude, longitude]); 
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+          setError(null);
+        },
+        (error) => {
+          setError(error.message);
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+  };
 
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "https://www.swiggy.com/dapi/restaurants/list/v5?lat=28.659465916416142&lng=77.47289534658194&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
+        `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${latitude}&lng=${longitude}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`
       );
       const json = await response.json();
       const restaurants =
@@ -32,15 +59,11 @@ const Body = () => {
     if (searchVal === "") {
       setRestaurantList(originalRestaurantList);
     } else {
-      const filteredRestaurants = originalRestaurantList.filter(
-        (restaurant) => {
-          return restaurant.info.name
-            .toLowerCase()
-            .includes(searchVal.toLowerCase());
-        }
+      const filteredRestaurants = originalRestaurantList.filter((restaurant) =>
+        restaurant.info.name.toLowerCase().includes(searchVal.toLowerCase())
       );
-      setRestaurantList(filteredRestaurants);     
-      if (filteredRestaurants.length == 0) {
+      setRestaurantList(filteredRestaurants);
+      if (filteredRestaurants.length === 0) {
         toast.error("Restaurant not found!");
         fetchData();
       } else {

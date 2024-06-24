@@ -1,7 +1,11 @@
 import { CDN_URL } from "../utils/constants";
+import { useNavigate } from "react-router-dom";
+
 const ResturantCard = ({ resData }) => {
-  const { cloudinaryImageId, name, areaName, costForTwo, avgRating, sla } =
+  const { cloudinaryImageId, name, areaName, costForTwo, avgRating, sla, id } =
     resData.info;
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -16,6 +20,9 @@ const ResturantCard = ({ resData }) => {
         borderRadius: "8px",
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         transition: "transform 0.3s ease",
+      }}
+      onClick={() => {
+        navigate(`/restaurants/${id}`);
       }}
       onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
       onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
